@@ -11,6 +11,7 @@
     "composition": "^2.3.0",
     "core-js": "^3.8.3",
     "vue": "^3.2.39",
+    "vue-draggable-next": "^2.1.1",
     "vue-router": "^4.0.3",
     "vuedraggable": "^4.1.0"
   },
