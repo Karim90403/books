@@ -1,71 +1,11 @@
-<!-- 
-<script lang="ts">
-import { defineComponent } from 'vue'
-import { VueDraggableNext } from 'vue-draggable-next'
-interface Book {
-  id: number;
-  name: string;
-  isHovered: boolean;
-  isFolklor: boolean;
-  isBook: boolean;
-}
-
-export default defineComponent({
-  components: {
-    draggable: VueDraggableNext,
-  },
-  data() {
-    return {
-      enabled: true,
-      dragging: false,
-      books: [{ name: 'Русские народные сказки', isHovered: false, isFolklor: true, isBook: true, id: 1 },
-      { name: 'Русские народные песни', isHovered: false, isFolklor: true, isBook: true, id: 2 },
-      { name: 'Питер Пэн', isHovered: false, isFolklor: false, isBook: true, id: 3 },
-      { name: 'Пословицы и поговорки', isHovered: false, isFolklor: true, isBook: true, id: 4 },
-      { name: 'Что такое Родина?', isHovered: false, isFolklor: false, isBook: true, id: 5 },
-      { name: 'Рассказы о детях', isHovered: false, isFolklor: false, isBook: true, id: 6 }] ,
-      folklor: [
-        { id: 1, isBook: false },
-        { id: 2, isBook: false },
-        { id: 3, isBook: false },
-        { id: 4, isBook: false },
-        { id: 5, isBook: false },
-        { id: 6, isBook: false },
-      ] as Array<Book>,
-      notFolklor: [
-        { id: 1, isBook: false },
-        { id: 2, isBook: false },
-        { id: 3, isBook: false },
-        { id: 4, isBook: false },
-        { id: 5, isBook: false },
-        { id: 6, isBook: false }
-      ] as Array<Book>,
-
-    }
-  },
-  methods: {
-    check() {
-      // Pass
-    },
-    addFolk() {
-      this.folklor.pop()
-    },
-    addNonFolk() {
-      this.notFolklor.pop()
-    },
-  },
-})
-</script> -->
-
-
 <script lang="ts" setup>
 import { defineComponent, ref, computed } from 'vue'
 import { VueDraggableNext } from 'vue-draggable-next'
 interface Book {
   id: number;
-  name: string;
-  isHovered: boolean;
-  isFolklor: boolean;
+  name?: string;
+  isHovered?: boolean;
+  isFolklor?: boolean;
   isBook: boolean;
 }
 
@@ -98,33 +38,63 @@ let notFolklor = ref<Array<Book>>([
 ] as Array<Book>,
 )
 
-// const folkFillingSync = ((itemIndex) => {
-//   let flag = true
-//   folklor.value.forEach((item: Book, index: number) => {
-//     if (!(item.isBook && index <= folklor.value.length - 1)) {
-//       flag = false;
-//       return;
-//     }
-//   });
-//   return flag
-// })
+let dropping = ref(false)
+
+const moveBook = (e: any) => {
+  if (e.added) {
+    if(folklor.value.length > 6){
+      let iter: any = 0;
+      folklor.value.forEach(element => {
+        iter += 1;
+        if(!element.isBook && e.added.element.id == element.id) {
+          folklor.value = [...folklor.value.slice(0, iter-1)  ,...folklor.value.slice(iter, folklor.value.length)]
+        }
+      });
+    } else if(folklor.value.length < 6){
+      folklor.value.push({ id: e.added.element.id , isBook: false })
+      console.log(folklor.value)
+    } 
+    if (notFolklor.value.length > 6) {
+      let iter: any = 0;
+      notFolklor.value.forEach(element => {
+        iter += 1;
+        if(!element.isBook && e.added.element.id == element.id) {
+          notFolklor.value = [...notFolklor.value.slice(0, iter-1)  ,...notFolklor.value.slice(iter, notFolklor.value.length)]
+        }
+      });
+    }  else if (notFolklor.value.length < 6) {
+      notFolklor.value.push({ id: e.added.element.id , isBook: false })
+      console.log(folklor.value)
+
+    }
+  } else if (e.moved) {
+    console.log("moveBook event")
+  } else if (e.remowed) {
+    console.log("remowed event")
+  }
+}
 
 const check = () => {
-  // Pass
-}
-const addFolk = (e: any) => {
-  console.log(e);
-  console.log(e.to.className);
-  if (e.to.className.includes("non_folk_droppable")) {
-    return
-    // check if not book and pop else return false
-  } else if (e.to.className.includes("folk_droppable")) {
-    // check if not book and pop else return false
-  }
-  else { return false }
-}
-const addNonFolk = () => {
-  notFolklor.value.pop()
+  // pass
+  folklor.value.forEach(element => {
+    if(element.isBook) {
+      if(element.isFolklor){
+        // green
+      } else {
+        // red
+      }
+    }
+  })
+
+  notFolklor.value.forEach(element => {
+    if(element.isBook) {
+      if(element.isFolklor){
+        // green
+      } else {
+        // red
+      }
+    }
+  })
 }
 </script>
 
@@ -141,7 +111,7 @@ const addNonFolk = () => {
     </div>
   </div>
   <div class="main__wrapper">
-    <VueDraggableNext :move="addFolk" :list="books" handle=".handle" class="main__dragable" group="group">
+    <VueDraggableNext :list="books" @change="moveBook" handle=".handle" class="main__dragable" group="group">
       <div v-for="book in books" :key="book.id">
         <div class="dragable-item" @mouseover="book.isHovered = true" @mouseleave="book.isHovered = false">
           <div v-if="book.isHovered" class="handle"><img src="../assets/VectordragDark.svg"></div>
@@ -151,12 +121,9 @@ const addNonFolk = () => {
           </div>
         </div>
       </div>
-      <!-- <div>{{books}}</div>
-      <div>{{folklor}}</div>
-      <div>{{notFolklor}}</div> -->
     </VueDraggableNext>
     <div class="main__dropable">
-      <VueDraggableNext v-model="folklor" :move="addFolk" handle=".handle" class="dropable folk_droppable" :sort="true"
+      <VueDraggableNext :list="folklor" @change="moveBook"  handle=".handle" class="dropable folk_droppable" :sort="true"
         group="group">
         <div v-for="book in folklor" :key="book.id">
           <div v-if="book.isBook" class="dropable__zone--droped">
@@ -168,11 +135,10 @@ const addNonFolk = () => {
               </div>
             </div>
           </div>
-          <div v-else class="dropable__zone"></div>
+          <div v-else class="dropable__zone">{{book.id}}</div>
         </div>
       </VueDraggableNext>
-      <VueDraggableNext :list="notFolklor" @add="addNonFolk" handle=".handle" class="dropable non_folk_droppable"
-        group="group">
+      <VueDraggableNext :list="notFolklor" @change="moveBook"  handle=".handle" class="dropable non_folk_droppable" group="group">
         <div v-for="book in notFolklor" :key="book.id">
           <div v-if="book.isBook" class="dropable__zone--droped">
             <div class="dragable-item" @mouseover="book.isHovered = true" @mouseleave="book.isHovered = false">
@@ -183,7 +149,7 @@ const addNonFolk = () => {
               </div>
             </div>
           </div>
-          <div v-else class="dropable__zone"></div>
+          <div v-else class="dropable__zone">{{book.id}}</div>
         </div>
       </VueDraggableNext>
     </div>
