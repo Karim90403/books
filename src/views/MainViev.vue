@@ -7,17 +7,19 @@ interface Book {
   isHovered?: boolean;
   isFolklor?: boolean;
   isBook: boolean;
+  state?: string;
+  preessed?: string;
 }
 
 let enabled = ref<boolean>(true)
 let dragging = ref<boolean>(false)
 let books = ref<Array<Book>>(
-  [{ name: 'Русские народные сказки', isHovered: false, isFolklor: true, isBook: true, id: 1 },
-  { name: 'Русские народные песни', isHovered: false, isFolklor: true, isBook: true, id: 2 },
-  { name: 'Питер Пэн', isHovered: false, isFolklor: false, isBook: true, id: 3 },
-  { name: 'Пословицы и поговорки', isHovered: false, isFolklor: true, isBook: true, id: 4 },
-  { name: 'Что такое Родина?', isHovered: false, isFolklor: false, isBook: true, id: 5 },
-  { name: 'Рассказы о детях', isHovered: false, isFolklor: false, isBook: true, id: 6 }]
+  [{ name: 'Русские народные сказки', isHovered: false, isFolklor: true, isBook: true, id: 1, state: " ", preessed: " " },
+  { name: 'Русские народные песни', isHovered: false, isFolklor: true, isBook: true, id: 2, state: " ", preessed: " " },
+  { name: 'Питер Пэн', isHovered: false, isFolklor: false, isBook: true, id: 3, state: " ", preessed: " " },
+  { name: 'Пословицы и поговорки', isHovered: false, isFolklor: true, isBook: true, id: 4, state: " ", preessed: " " },
+  { name: 'Что такое Родина?', isHovered: false, isFolklor: false, isBook: true, id: 5, state: " ", preessed: " " },
+  { name: 'Рассказы о детях', isHovered: false, isFolklor: false, isBook: true, id: 6, state: " ", preessed: " " }]
 )
 let folklor = ref<Array<Book>>([
   { id: 1, isBook: false },
@@ -42,6 +44,7 @@ let dropping = ref(false)
 
 const moveBook = (e: any) => {
   if (e.added) {
+    e.added.element.preessed = " "
     if(folklor.value.length > 6){
       let iter: any = 0;
       folklor.value.forEach(element => {
@@ -68,9 +71,9 @@ const moveBook = (e: any) => {
 
     }
   } else if (e.moved) {
-    console.log("moveBook event")
+    e.moved.element.preessed = " "
   } else if (e.remowed) {
-    console.log("remowed event")
+    e.remowed.element.preessed = " "
   }
 }
 
@@ -79,19 +82,19 @@ const check = () => {
   folklor.value.forEach(element => {
     if(element.isBook) {
       if(element.isFolklor){
-        // green
+        element.state = "correct";
       } else {
-        // red
+        element.state = "incorrect";
       }
     }
   })
 
   notFolklor.value.forEach(element => {
     if(element.isBook) {
-      if(element.isFolklor){
-        // green
+      if(!element.isFolklor){
+        element.state = "correct";
       } else {
-        // red
+        element.state = "incorrect";
       }
     }
   })
@@ -111,9 +114,9 @@ const check = () => {
     </div>
   </div>
   <div class="main__wrapper">
-    <VueDraggableNext :list="books" @change="moveBook" handle=".handle" class="main__dragable" group="group">
+    <VueDraggableNext :list="books" @change="moveBook"  handle=".handle" class="main__dragable" group="group">
       <div v-for="book in books" :key="book.id">
-        <div class="dragable-item" @mouseover="book.isHovered = true" @mouseleave="book.isHovered = false">
+        <div class="dragable-item" :class="[`${book.state}`, `${book.preessed}` ]" @mousedown="book.preessed = 'pressed'" @mouseup="book.preessed = ' '" @mouseover="book.isHovered = true" @mouseleave="book.isHovered = false">
           <div v-if="book.isHovered" class="handle"><img src="../assets/VectordragDark.svg"></div>
           <div v-else class="handle"><img src="../assets/VectordragGray.svg"></div>
           <div class="book-image">
@@ -127,7 +130,9 @@ const check = () => {
         group="group">
         <div v-for="book in folklor" :key="book.id">
           <div v-if="book.isBook" class="dropable__zone--droped">
-            <div class="dragable-item" @mouseover="book.isHovered = true" @mouseleave="book.isHovered = false">
+            <div class="dragable-item" :class="[`${book.state}`, `${book.preessed}` ]" @mousedown="book.preessed = 'pressed'" @mouseup="book.preessed = ' '" @mouseover="book.isHovered = true" @mouseleave="book.isHovered = false">
+              <!-- <v-if book.state = "correct">correct</v-if>
+              <v-if book.state = "incorrect">incorrect</v-if> -->
               <div v-if="book.isHovered" class="handle"><img src="../assets/VectordragDark.svg"></div>
               <div v-else class="handle"><img src="../assets/VectordragGray.svg"></div>
               <div class="book-image">
@@ -135,13 +140,15 @@ const check = () => {
               </div>
             </div>
           </div>
-          <div v-else class="dropable__zone">{{book.id}}</div>
+          <div v-else class="dropable__zone"></div>
         </div>
       </VueDraggableNext>
       <VueDraggableNext :list="notFolklor" @change="moveBook"  handle=".handle" class="dropable non_folk_droppable" group="group">
         <div v-for="book in notFolklor" :key="book.id">
           <div v-if="book.isBook" class="dropable__zone--droped">
-            <div class="dragable-item" @mouseover="book.isHovered = true" @mouseleave="book.isHovered = false">
+            <div class="dragable-item" :class="[`${book.state}`, `${book.preessed}` ]" @mousedown="book.preessed = 'pressed'" @mouseup="book.preessed = ' '" @mouseover="book.isHovered = true" @mouseleave="book.isHovered = false">
+              <!-- <div v-if="book.state === 'correct'">correct</div>  
+              <div v-if="book.state === 'incorrect'">incorrect</div> -->
               <div v-if="book.isHovered" class="handle"><img src="../assets/VectordragDark.svg"></div>
               <div v-else class="handle"><img src="../assets/VectordragGray.svg"></div>
               <div class="book-image">
@@ -149,7 +156,7 @@ const check = () => {
               </div>
             </div>
           </div>
-          <div v-else class="dropable__zone">{{book.id}}</div>
+          <div v-else class="dropable__zone"></div>
         </div>
       </VueDraggableNext>
     </div>
@@ -157,10 +164,11 @@ const check = () => {
 
   <div class="main__button" @click="check">Проверить</div>
 
+
 </template>
 
 <style lang="scss">
-$primaryColor: #8BD74B;
+$primaryColor: #8BD74B; 
 $baseMargin: 57px;
 
 .back {
@@ -252,6 +260,14 @@ $baseMargin: 57px;
     width: 50%;
     display: flex;
   }
+}
+
+.correct{
+  border-left: 2px solid #46B755;
+}
+
+.incorrect{
+  border-left: 2px solid #F93232;
 }
 
 .book-image img {
