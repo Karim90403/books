@@ -107,21 +107,20 @@ const check = () => {
     <img src="../assets/arr.svg" class="arr">
     Назад
   </router-link>
-  <div class="main__title">В мире книг</div>
+  <span class="main__title">В мире книг</span>
   <div class="main__titles">
-    <div class="dropable__title">Жанры фольклора</div>
-    <div class="dropable__title">Не являются жанрами <p>фольклора</p>
-    </div>
+    <span class="dropable__title">Жанры фольклора</span>
+    <span class="dropable__title">Не являются жанрами <p>фольклора</p></span>
   </div>
   <div class="main__wrapper">
     <VueDraggableNext :list="books" @change="moveBook"  handle=".handle" class="main__dragable" group="group">
       <div v-for="book in books" :key="book.id">
         <div class="dragable-item" :class="[`${book.state}`, `${book.preessed}` ]" @mousedown="book.preessed = 'pressed'" @mouseup="book.preessed = ' '" @mouseover="book.isHovered = true" @mouseleave="book.isHovered = false">
-          <div v-if="book.isHovered" class="handle"><img src="../assets/VectordragDark.svg"></div>
-          <div v-else class="handle"><img src="../assets/VectordragGray.svg"></div>
-          <div class="book-image">
+          <span v-if="book.isHovered" class="handle"><img src="../assets/VectordragDark.svg"></span>
+          <span v-else class="handle"><img src="../assets/VectordragGray.svg"></span>
+          <span class="book-image">
             <img :src="require(`../assets/Picbook${book.id}.png`)" v-bind:alt=book.name>
-          </div>
+          </span>
         </div>
       </div>
     </VueDraggableNext>
@@ -131,13 +130,11 @@ const check = () => {
         <div v-for="book in folklor" :key="book.id">
           <div v-if="book.isBook" class="dropable__zone--droped">
             <div class="dragable-item" :class="[`${book.state}`, `${book.preessed}` ]" @mousedown="book.preessed = 'pressed'" @mouseup="book.preessed = ' '" @mouseover="book.isHovered = true" @mouseleave="book.isHovered = false">
-              <!-- <v-if book.state = "correct">correct</v-if>
-              <v-if book.state = "incorrect">incorrect</v-if> -->
-              <div v-if="book.isHovered" class="handle"><img src="../assets/VectordragDark.svg"></div>
-              <div v-else class="handle"><img src="../assets/VectordragGray.svg"></div>
-              <div class="book-image">
+              <span v-if="book.isHovered" class="handle"><img src="../assets/VectordragDark.svg"></span>
+              <span v-else class="handle"><img src="../assets/VectordragGray.svg"></span>
+              <span class="book-image">
                 <img :src="require(`../assets/Picbook${book.id}.png`)" v-bind:alt=book.name>
-              </div>
+              </span>
             </div>
           </div>
           <div v-else class="dropable__zone"></div>
@@ -147,13 +144,11 @@ const check = () => {
         <div v-for="book in notFolklor" :key="book.id">
           <div v-if="book.isBook" class="dropable__zone--droped">
             <div class="dragable-item" :class="[`${book.state}`, `${book.preessed}` ]" @mousedown="book.preessed = 'pressed'" @mouseup="book.preessed = ' '" @mouseover="book.isHovered = true" @mouseleave="book.isHovered = false">
-              <!-- <div v-if="book.state === 'correct'">correct</div>  
-              <div v-if="book.state === 'incorrect'">incorrect</div> -->
-              <div v-if="book.isHovered" class="handle"><img src="../assets/VectordragDark.svg"></div>
-              <div v-else class="handle"><img src="../assets/VectordragGray.svg"></div>
-              <div class="book-image">
+              <span v-if="book.isHovered" class="handle"><img src="../assets/VectordragDark.svg"></span>
+              <span v-else class="handle"><img src="../assets/VectordragGray.svg"></span>
+              <span class="book-image">
                 <img :src="require(`../assets/Picbook${book.id}.png`)" v-bind:alt=book.name>
-              </div>
+              </span>
             </div>
           </div>
           <div v-else class="dropable__zone"></div>
@@ -162,7 +157,7 @@ const check = () => {
     </div>
   </div>
 
-  <div class="main__button" @click="check">Проверить</div>
+  <span class="main__button" @click="check">Проверить</span>
 
 
 </template>
